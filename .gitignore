@@ -2,3 +2,7 @@
 .DS_Store
 .idea/
 *.iml
+.ipynb_checkpoints/
+
+# Data and other too large files
+data/
