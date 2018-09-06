@@ -10,6 +10,9 @@ class WurLibrary4Learning(object):
         self.data = {}
         self.load()
 
+    def __iter__(self):
+        return iter(self.data.values())
+
     def load(self):
         meta_file_path = os.path.join(self.source, "library4learning-metadata.xml")
         texts_file_path = os.path.join(self.source, "library4learning-fulltext.xml")
@@ -48,9 +51,14 @@ class WurLibrary4Learning(object):
 
 
 if __name__ == "__main__":
+
     import json
+
     source = os.path.join("data", "wur")
     destination = os.path.join(source, "wur.json")
+
+    print("Dumping data into {}".format(destination))
+
     wur = WurLibrary4Learning(source)
     with open(destination, "w") as dest:
-        json.dump(list(wur.data.values()), dest)
+        json.dump(list(wur), dest)
