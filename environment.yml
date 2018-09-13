@@ -1,4 +1,4 @@
-name: surf-test
+name: surf
 channels:
   - conda-forge
   - defaults
