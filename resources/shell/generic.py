@@ -10,8 +10,8 @@ from django.db import models
 from django.core.exceptions import ValidationError
 import json_field
 
-from datagrowth.resources.base import Resource
-from datagrowth.exceptions import DGShellError
+from resources.base import Resource
+from resources.exceptions import DGShellError
 
 
 class ShellResource(Resource):
@@ -229,8 +229,6 @@ class ShellResource(Resource):
     def clean(self):
         if len(self.uri):
             self.uri = self.uri[:255]
-        if not self.id and self.config.purge_immediately:
-            self.purge_at = datetime.now()
 
     #######################################################
     # CONVENIENCE

@@ -3,8 +3,6 @@ import logging
 from django.db import models
 from django.contrib.contenttypes.fields import GenericForeignKey, ContentType
 
-from datagrowth import configuration
-
 
 log = logging.getLogger("datascope")
 
@@ -14,11 +12,6 @@ class Resource(models.Model):
     # Identification
     uri = models.CharField(max_length=255, db_index=True, default=None)
     status = models.PositiveIntegerField(default=0)
-
-    # Configuration
-    config = configuration.ConfigurationField(
-        config_defaults=configuration.DEFAULT_CONFIGURATION,
-    )
 
     # Archiving fields
     created_at = models.DateTimeField(auto_now_add=True)
