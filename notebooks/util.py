@@ -10,6 +10,8 @@ import logging
 from elasticsearch import Elasticsearch
 
 GIT_MARKER = None
+ES_DOC_CACHE = None
+RAW_DOC_CACHE = None
 
 
 def get_logger(name):
@@ -24,6 +26,7 @@ def get_logger(name):
 
 def get_indices(es_client, index_name):
     return es_client.cat.indices(index_name)
+
 
 def get_es_config(file_path):
     """
@@ -57,7 +60,7 @@ def read_documents(folder):
     """
     Returns a generator which yields all json files in a folder
     """
-    documents = glob.glob(f'{folder}/*.json')
+    documents = glob.glob(f'{folder}/**/*.json', recursive=True)
     for document in documents:
         with open(document, 'rt') as stream:
             yield json.load(stream)
@@ -113,3 +116,38 @@ def write_documents(documents, folder, stage):
         file_name = os.path.join(folder, f'{document["id"]}.json')
         with open(file_name, 'w+t') as stream:
             json.dump(document, stream)
+
+
+def get_raw_document(id, raw_folder, use_cache=True):
+    if use_cache:
+        global RAW_DOC_CACHE
+        if RAW_DOC_CACHE is None:
+            RAW_DOC_CACHE = {}
+            for document in read_raw_documents(raw_folder):
+                RAW_DOC_CACHE[document['id']] = document
+
+        return RAW_DOC_CACHE.get(id, None)
+
+    for document in read_raw_documents(raw_folder):
+        if document['id'] == id:
+            return document
+
+
+def get_es_document(id, es_folder, use_cache=True):
+    if use_cache:
+        global ES_DOC_CACHE
+        if ES_DOC_CACHE is None:
+            ES_DOC_CACHE = {}
+            for document in read_documents(es_folder):
+                ES_DOC_CACHE[document['id']] = document
+
+        return ES_DOC_CACHE.get(id, None)
+
+    for document in read_documents(es_folder):
+        if document['id'] == id:
+            return document
+
+
+def search(es_client, **kwargs):
+    response = es_client.search(kwargs)
+    print(response)
