@@ -139,9 +139,10 @@ def get_es_document(id, es_folder, use_cache=True):
         if ES_DOC_CACHE is None:
             ES_DOC_CACHE = {}
             for document in read_documents(es_folder):
-                ES_DOC_CACHE[document['id']] = document
+                key = f'{document["id"]}-{es_folder}'
+                ES_DOC_CACHE[key] = document
 
-        return ES_DOC_CACHE.get(id, None)
+        return ES_DOC_CACHE.get(f'{id}-{es_folder}', None)
 
     for document in read_documents(es_folder):
         if document['id'] == id:
