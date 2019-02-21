@@ -134,15 +134,15 @@ def get_raw_document(id, raw_folder, use_cache=True):
 
 
 def get_es_document(id, es_folder, use_cache=True):
-    if use_cache:
-        global ES_DOC_CACHE
-        if ES_DOC_CACHE is None:
-            ES_DOC_CACHE = {}
-            for document in read_documents(es_folder):
-                key = f'{document["id"]}-{es_folder}'
-                ES_DOC_CACHE[key] = document
+  #  if use_cache:
+  #      global ES_DOC_CACHE
+  #      if ES_DOC_CACHE is None:
+  #          ES_DOC_CACHE = {}
+  #          for document in read_documents(es_folder):
+  #              key = f'{document["id"]}-{es_folder}'
+  #              ES_DOC_CACHE[key] = document
 
-        return ES_DOC_CACHE.get(f'{id}-{es_folder}', None)
+  #      return ES_DOC_CACHE.get(f'{id}-{es_folder}', None)
 
     for document in read_documents(es_folder):
         if document['id'] == id:
