@@ -62,6 +62,7 @@ def read_documents(folder):
     """
     documents = glob.glob(f'{folder}/**/*.json', recursive=True)
     for document in documents:
+        get_logger(__name__).debug(f"Reading document={document}")
         with open(document, 'rt') as stream:
             yield json.load(stream)
 
@@ -81,14 +82,37 @@ def read_raw_documents(directory):
                     yield document
 
 
+def get_arrangements(json_document):
+    if isinstance(json_document, (list,)):
+        get_logger(__name__).debug(f'Number of arrangements={len(json_document)}')
+        yield from json_document
+    else:
+        get_logger(__name__).debug(f'Number of arrangements=1')
+        yield json_document
+
+
+def read_input_documents(directory):
+    """
+    Processes all json files in the directory and returns all documents
+    """
+    for json_document in read_documents(directory):
+        for arrangement in get_arrangements(json_document):
+            yield from to_document(arrangement)
+
+
 def to_document(arrangement):
     keys = arrangement.keys()
-    for document in arrangement['documents']:
-        # we add all the remaining keys
-        for key in keys:
-            if key not in document and key not in 'documents':
-                document[f'arrangement_{key}'] = arrangement[key]
-        yield document
+    if 'documents' in arrangement:
+        get_logger(__name__).debug(f'Number of documents in arrangement={len(arrangement["documents"])}')
+        for document in arrangement['documents']:
+            # we add all the remaining keys
+            for key in keys:
+                if key not in document and key not in 'documents':
+                    document[f'arrangement_{key}'] = arrangement[key]
+            yield document
+    else:
+        get_logger(__name__).debug(f'Number of documents in arrangement=1')
+        yield arrangement
 
 
 def _get_git_marker():
